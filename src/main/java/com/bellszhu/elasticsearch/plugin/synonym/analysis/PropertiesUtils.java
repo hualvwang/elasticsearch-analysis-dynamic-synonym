@@ -16,6 +16,7 @@ public class PropertiesUtils {
          */
         public static boolean loadFile(String fileName){
             try {
+
                 prop.load(PropertiesUtils.class.getClassLoader().getResourceAsStream(fileName));
             } catch (IOException e) {
                 e.printStackTrace();

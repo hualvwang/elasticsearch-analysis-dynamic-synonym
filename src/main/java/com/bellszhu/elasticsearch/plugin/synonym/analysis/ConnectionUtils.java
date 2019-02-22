@@ -1,6 +1,10 @@
 package com.bellszhu.elasticsearch.plugin.synonym.analysis;
 
 
+import com.bellszhu.elasticsearch.plugin.DynamicSynonymPlugin;
+import org.elasticsearch.common.io.PathUtils;
+
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -16,11 +20,15 @@ public class ConnectionUtils {
     private static String driver=null;
 
     static {
-        PropertiesUtils.loadFile("dbconfig.properties");
-        URL = PropertiesUtils.getPropertyValue("spring.datasource.sqlserver.hlv_66law_article.jdbcUrl");
-        USER = PropertiesUtils.getPropertyValue("spring.datasource.sqlserver.hlv_66law_article.username");
-        PWD = PropertiesUtils.getPropertyValue("spring.datasource.sqlserver.hlv_66law_article.password");
-        driver=PropertiesUtils.getPropertyValue("spring.datasource.sqlserver.hlv_66law_article.driverClassName");
+        String path= PathUtils
+                .get(new File(DynamicSynonymPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath())
+                        .getParent(), "config")
+                .toAbsolutePath().toString()+"dbconfig.properties";
+        PropertiesUtils.loadFile(path);
+        URL = PropertiesUtils.getPropertyValue("datasource.jdbcUrl");
+        USER = PropertiesUtils.getPropertyValue("datasource.username");
+        PWD = PropertiesUtils.getPropertyValue("datasource.password");
+        driver=PropertiesUtils.getPropertyValue("datasource.driverClassName");
         try {
             Class.forName(driver);
         } catch (ClassNotFoundException e) {

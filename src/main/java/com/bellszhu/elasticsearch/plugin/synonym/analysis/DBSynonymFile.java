@@ -58,28 +58,52 @@ public class DBSynonymFile  implements SynonymFile {
         }
     }
 
-    private boolean isNeedReloadSynonymMap=false;
     @Override
     public boolean isNeedReloadSynonymMap() {
-                return isNeedReloadSynonymMap;
-    }
+        Connection connection = ConnectionUtils.getConnection();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        int status = 0;
+        try {
+            preparedStatement = connection.prepareStatement("select top 1 refreshStatus from  elastic_search_synonym_is_refresh");
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                status = resultSet.getInt(1);
+            }
+            if (status == 1) {
+                preparedStatement = connection.prepareStatement("update elastic_search_synonym_is_refresh set refreshStatus=0");
+                preparedStatement.execute();
+            }
 
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return status == 1;
+    }
 
 
     @Override
     public Reader getReader() {
         Reader reader = null;
-        Connection connection=ConnectionUtils.getConnection();
-        StringBuilder str=new StringBuilder();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Connection connection = ConnectionUtils.getConnection();
+        StringBuilder str = new StringBuilder();
         try {
-            PreparedStatement preparedStatement=connection.prepareStatement("select synony from  elastic_serach_synony");
-            ResultSet resultSet=preparedStatement.executeQuery();
+            preparedStatement = connection.prepareStatement("select synony from  elastic_serach_synony where status=1");
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 String s = resultSet.getString(1);
-                str.append(s+"\r\n");
+                str.append(s + "\r\n");
             }
-            if(str.toString().length()>0)isNeedReloadSynonymMap=true;
-            reader=new InputStreamReader(new ByteArrayInputStream(str.toString().getBytes()),"utf-8");
+            reader = new InputStreamReader(new ByteArrayInputStream(str.toString().getBytes()), "utf-8");
 
         } catch (SQLException e) {
             logger.error("get DB synonym reader {} error!", e, "db");
@@ -89,6 +113,12 @@ public class DBSynonymFile  implements SynonymFile {
             throw new IllegalArgumentException(
                     " while reading  synonyms file", e);
         } finally {
+            try {
+                reader.close();
+                connection.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return reader;
     }
