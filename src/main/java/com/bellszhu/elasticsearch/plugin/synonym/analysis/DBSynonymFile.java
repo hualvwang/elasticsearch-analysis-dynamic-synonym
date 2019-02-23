@@ -97,7 +97,7 @@ public class DBSynonymFile  implements SynonymFile {
         Connection connection = ConnectionUtils.getConnection();
         StringBuilder str = new StringBuilder();
         try {
-            preparedStatement = connection.prepareStatement("select synony from  elastic_serach_synony where status=1");
+            preparedStatement = connection.prepareStatement("select synonym from  elastic_search_synonym   where status=1");
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 String s = resultSet.getString(1);
