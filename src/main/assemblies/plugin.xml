@@ -29,5 +29,13 @@
                 <include>org.apache.httpcomponents:httpclient</include>
             </includes>
         </dependencySet>
+        <dependencySet>
+            <outputDirectory>elasticsearch</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+            <useTransitiveFiltering>true</useTransitiveFiltering>
+            <includes>
+                <include>com.microsoft.sqlserver:mssql-jdbc</include>
+            </includes>
+        </dependencySet>
     </dependencySets>
 </assembly>

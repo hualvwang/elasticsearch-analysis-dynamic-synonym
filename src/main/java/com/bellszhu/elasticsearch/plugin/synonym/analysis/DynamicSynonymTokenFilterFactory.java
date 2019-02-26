@@ -116,7 +116,14 @@ public class DynamicSynonymTokenFilterFactory extends
 			synonymFile = new RemoteSynonymFile(env, analyzer, expand, format,
 					location);
 		} else if(location.startsWith("db://")){
-			synonymFile=  new DBSynonymFile( format,  expand,  analyzer, env);
+			try{
+				String[] split = location.replace("db://", "").split(",");
+				synonymFile=  new DBSynonymFile( format,  expand,  analyzer, env, split[0], split[1]);
+			}catch (Exception e){
+				logger.warn("获取词典数据库配置出错", e);
+				throw new IOException(e);
+			}
+
 		}else{
 			synonymFile = new LocalSynonymFile(env, analyzer, expand, format,
 					location);

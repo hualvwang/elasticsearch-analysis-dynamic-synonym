@@ -2,9 +2,12 @@ package com.bellszhu.elasticsearch.plugin.synonym.analysis;
 
 
 import com.bellszhu.elasticsearch.plugin.DynamicSynonymPlugin;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.common.io.PathUtils;
+import org.elasticsearch.common.logging.ESLoggerFactory;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -18,18 +21,13 @@ public class ConnectionUtils {
     private static String USER = null;
     private static String PWD = null;
     private static String driver=null;
-
     static {
-        String path= PathUtils
-                .get(new File(DynamicSynonymPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath())
-                        .getParent(), "config")
-                .toAbsolutePath().toString()+"dbconfig.properties";
-        PropertiesUtils.loadFile(path);
-        URL = PropertiesUtils.getPropertyValue("datasource.jdbcUrl");
-        USER = PropertiesUtils.getPropertyValue("datasource.username");
-        PWD = PropertiesUtils.getPropertyValue("datasource.password");
-        driver=PropertiesUtils.getPropertyValue("datasource.driverClassName");
         try {
+
+            URL = PropertiesUtils.getPropertyValue("datasource.jdbcUrl");
+            USER = PropertiesUtils.getPropertyValue("datasource.username");
+            PWD = PropertiesUtils.getPropertyValue("datasource.password");
+            driver=PropertiesUtils.getPropertyValue("datasource.driverClassName");
             Class.forName(driver);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

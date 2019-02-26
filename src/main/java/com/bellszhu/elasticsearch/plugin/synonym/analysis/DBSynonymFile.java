@@ -23,13 +23,17 @@ public class DBSynonymFile  implements SynonymFile {
     private boolean expand;
     private Analyzer analyzer;
     private Environment env;
+    private String tableName;
+    private String checkName;
 
 
-    public DBSynonymFile(String format, boolean expand, Analyzer analyzer, Environment env) {
+    public DBSynonymFile(String format, boolean expand, Analyzer analyzer, Environment env, String tableName, String checkName) {
         this.format = format;
         this.expand = expand;
         this.analyzer = analyzer;
         this.env = env;
+        this.tableName = tableName;
+        this.checkName = checkName;
     }
 
     public DBSynonymFile(String format, boolean expand) {
@@ -65,13 +69,13 @@ public class DBSynonymFile  implements SynonymFile {
         ResultSet resultSet = null;
         int status = 0;
         try {
-            preparedStatement = connection.prepareStatement("select top 1 refreshStatus from  elastic_search_synonym_is_refresh");
+            preparedStatement = connection.prepareStatement("select top 1 refreshStatus from " + checkName + " where type = 'tyc'");
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 status = resultSet.getInt(1);
             }
             if (status == 1) {
-                preparedStatement = connection.prepareStatement("update elastic_search_synonym_is_refresh set refreshStatus=0");
+                preparedStatement = connection.prepareStatement("update "+ checkName +" set refreshStatus=0 where type = 'tyc'" );
                 preparedStatement.execute();
             }
 
@@ -97,7 +101,7 @@ public class DBSynonymFile  implements SynonymFile {
         Connection connection = ConnectionUtils.getConnection();
         StringBuilder str = new StringBuilder();
         try {
-            preparedStatement = connection.prepareStatement("select synonym from  elastic_search_synonym   where status=1");
+            preparedStatement = connection.prepareStatement("select synonym from  " +tableName+"   where status=1");
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 String s = resultSet.getString(1);
@@ -114,7 +118,6 @@ public class DBSynonymFile  implements SynonymFile {
                     " while reading  synonyms file", e);
         } finally {
             try {
-                reader.close();
                 connection.close();
             } catch (Exception e) {
                 e.printStackTrace();

@@ -4,6 +4,7 @@
 package com.bellszhu.elasticsearch.plugin;
 
 import com.bellszhu.elasticsearch.plugin.synonym.analysis.DynamicSynonymTokenFilterFactory;
+import com.bellszhu.elasticsearch.plugin.synonym.analysis.PropertiesUtils;
 import com.bellszhu.elasticsearch.plugin.synonym.service.DynamicSynonymAnalysisService;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.service.ClusterService;
@@ -37,7 +38,7 @@ import static java.util.Collections.singletonList;
  */
 public class DynamicSynonymPlugin extends Plugin  implements AnalysisPlugin {
     private PluginComponent pluginComponent = new PluginComponent();
-
+    public static final String PLUGIN_NAME = "analysis-dynamic-synonym";
 
     @Override
     public Collection<Object> createComponents(
@@ -53,6 +54,7 @@ public class DynamicSynonymPlugin extends Plugin  implements AnalysisPlugin {
     ) {
         Collection<Object> components = new ArrayList<>();
         components.add(pluginComponent);
+        PropertiesUtils.loadFile(environment);
         return components;
     }
 
