@@ -27,7 +27,7 @@ public class PropertiesUtils {
                 if(prop == null){
                     prop = new Properties();
                     try {
-                        File path = env.configFile().resolve(DynamicSynonymPlugin.PLUGIN_NAME).resolve("dbconfig.properties").toFile();
+                        File path = env.configFile().resolve(DynamicSynonymPlugin.PLUGIN_NAME).resolve("config/dbconfig.properties").toFile();
                         logger.info("load config from "+ path.toString());
                         prop.load(new FileInputStream(path));
                     } catch (IOException e) {
