@@ -44,7 +44,7 @@ public class DBSynonymFile  implements SynonymFile {
     @Override
     public SynonymMap reloadSynonymMap() {
         try {
-            logger.info("start reload DB synonym from {}.", "db");
+            logger.info("从数据库加载同义词");
             Reader rulesReader = getReader();
             SynonymMap.Builder parser = null;
             if ("wordnet".equalsIgnoreCase(format)) {
@@ -56,7 +56,7 @@ public class DBSynonymFile  implements SynonymFile {
             }
             return parser.build();
         } catch (Exception e) {
-            logger.error("reload db synonym {} error!", e, "db");
+            logger.error("从数据库加载同义词出错!", e, "db");
             throw new IllegalArgumentException(
                     "could not reload DB synonyms file to build synonyms", e);
         }
@@ -69,7 +69,7 @@ public class DBSynonymFile  implements SynonymFile {
         ResultSet resultSet = null;
         int status = 0;
         try {
-            preparedStatement = connection.prepareStatement("select top 1 refreshStatus from " + checkName + " where type = 'tyc'");
+            preparedStatement = connection.prepareStatement("select refreshStatus from " + checkName + " where type = 'tyc'");
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 status = resultSet.getInt(1);
@@ -99,13 +99,17 @@ public class DBSynonymFile  implements SynonymFile {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         Connection connection = ConnectionUtils.getConnection();
+        if(connection == null){
+            logger.warn("获取数据库连接失败");
+            throw new IllegalArgumentException("获取数据库连接失败");
+        }
         StringBuilder str = new StringBuilder();
         try {
             preparedStatement = connection.prepareStatement("select synonym from  " +tableName+"   where status=1");
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 String s = resultSet.getString(1);
-                str.append(s + "\r\n");
+                str.append(s).append("\r\n");
             }
             reader = new InputStreamReader(new ByteArrayInputStream(str.toString().getBytes()), "utf-8");
 

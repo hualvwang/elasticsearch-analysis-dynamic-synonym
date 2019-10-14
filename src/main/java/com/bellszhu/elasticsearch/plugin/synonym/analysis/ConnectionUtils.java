@@ -21,17 +21,21 @@ public class ConnectionUtils {
     private static String USER = null;
     private static String PWD = null;
     private static String driver=null;
-    static {
-        try {
+//    private static MysqlDataSource source;
 
-            URL = PropertiesUtils.getPropertyValue("datasource.jdbcUrl");
-            USER = PropertiesUtils.getPropertyValue("datasource.username");
-            PWD = PropertiesUtils.getPropertyValue("datasource.password");
-            driver=PropertiesUtils.getPropertyValue("datasource.driverClassName");
+    static {
+
+        URL = PropertiesUtils.getPropertyValue("datasource.jdbcUrl");
+        USER = PropertiesUtils.getPropertyValue("datasource.username");
+        PWD = PropertiesUtils.getPropertyValue("datasource.password");
+        driver=PropertiesUtils.getPropertyValue("datasource.driverClassName");
+        try {
             Class.forName(driver);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+//        source = new MysqlDataSource();
+//        source.setUrl(URL);
     }
 
     /**

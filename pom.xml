@@ -62,12 +62,14 @@
 			<version>2.7</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
 			<version>7.2.1.jre8</version>
-			<scope>runtime</scope>
 		</dependency>
+
+
 
 	</dependencies>
 
