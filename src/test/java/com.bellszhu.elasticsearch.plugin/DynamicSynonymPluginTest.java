@@ -19,10 +19,6 @@ package com.bellszhu.elasticsearch.plugin;
 import org.codelibs.elasticsearch.runner.ElasticsearchClusterRunner;
 import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeAction;
-import org.elasticsearch.action.admin.indices.analyze.AnalyzeRequest;
-import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse;
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.junit.After;
@@ -137,8 +133,8 @@ public class DynamicSynonymPluginTest {
     }
 
     private synchronized void analyzer(String indexName) throws InterruptedException {
-        List<AnalyzeResponse.AnalyzeToken> tokens = tokens(indexName, "肯德基");
-        for (AnalyzeResponse.AnalyzeToken token : tokens) {
+        List<AnalyzeAction.AnalyzeToken> tokens = tokens(indexName, "肯德基");
+        for (AnalyzeAction.AnalyzeToken token : tokens) {
             System.out.println(token.getTerm() + " => " + token.getType());
         }
 
@@ -148,22 +144,22 @@ public class DynamicSynonymPluginTest {
         wait(1000 * 60);
 
         tokens = tokens(indexName, "金拱门");
-        for (AnalyzeResponse.AnalyzeToken token : tokens) {
+        for (AnalyzeAction.AnalyzeToken token : tokens) {
             System.out.println(token.getTerm() + " => " + token.getType());
         }
 
         tokens = tokens(indexName, "america");
-        for (AnalyzeResponse.AnalyzeToken token : tokens) {
+        for (AnalyzeAction.AnalyzeToken token : tokens) {
             System.out.println(token.getTerm() + " => " + token.getType());
         }
     }
 
-    private List<AnalyzeResponse.AnalyzeToken> tokens(String indexName, String text) {
-        AnalyzeRequest analyzeRequest = new AnalyzeRequest(indexName);
+    private List<AnalyzeAction.AnalyzeToken> tokens(String indexName, String text) {
+        AnalyzeAction.Request analyzeRequest = new AnalyzeAction.Request(indexName);
         analyzeRequest.text(text);
         analyzeRequest.analyzer("synonym_analyzer");
-        ActionFuture<AnalyzeResponse> actionFuture = runner.admin().indices().analyze(analyzeRequest);
-        AnalyzeResponse response = actionFuture.actionGet(10L, TimeUnit.SECONDS);
+        ActionFuture<AnalyzeAction.Response> actionFuture = runner.admin().indices().analyze(analyzeRequest);
+        AnalyzeAction.Response response = actionFuture.actionGet(10L, TimeUnit.SECONDS);
         return response.getTokens();
     }
 
@@ -175,13 +171,13 @@ public class DynamicSynonymPluginTest {
         createIndexWithLocalSynonym(index, absolutePath);
 
         String text = "肯德基";
-        List<AnalyzeResponse.AnalyzeToken> analyzeTokens = tokens(index, text);
-        for (AnalyzeResponse.AnalyzeToken token : analyzeTokens) {
+        List<AnalyzeAction.AnalyzeToken> analyzeTokens = tokens(index, text);
+        for (AnalyzeAction.AnalyzeToken token : analyzeTokens) {
             System.out.println(token.getTerm() + " => " + token.getType());
         }
 
         assert analyzeTokens.size() == 3;
-        for (AnalyzeResponse.AnalyzeToken token : analyzeTokens) {
+        for (AnalyzeAction.AnalyzeToken token : analyzeTokens) {
             String key = token.getTerm();
             if (text.equalsIgnoreCase(key)) {
                 assert token.getType().equalsIgnoreCase("word");
@@ -199,13 +195,13 @@ public class DynamicSynonymPluginTest {
         createIndexWithLocalSynonym(index, absolutePath);
 
         String text = "kfc";
-        List<AnalyzeResponse.AnalyzeToken> analyzeTokens = tokens(index, text);
-        for (AnalyzeResponse.AnalyzeToken token : analyzeTokens) {
+        List<AnalyzeAction.AnalyzeToken> analyzeTokens = tokens(index, text);
+        for (AnalyzeAction.AnalyzeToken token : analyzeTokens) {
             System.out.println(token.getTerm() + " => " + token.getType());
         }
 
         assert analyzeTokens.size() == 3;
-        for (AnalyzeResponse.AnalyzeToken token : analyzeTokens) {
+        for (AnalyzeAction.AnalyzeToken token : analyzeTokens) {
             String key = token.getTerm();
             if (text.equalsIgnoreCase(key)) {
                 assert token.getType().equalsIgnoreCase("word");
