@@ -37,7 +37,8 @@ public class RemoteSynonymFile implements SynonymFile {
 
     private static Logger logger = LogManager.getLogger("dynamic-synonym");
 
-    private CloseableHttpClient httpclient;
+    final private static CloseableHttpClient httpclient = AccessController.doPrivileged((PrivilegedAction<CloseableHttpClient>) HttpClients::createDefault);
+
 
     private String format;
 
@@ -64,7 +65,6 @@ public class RemoteSynonymFile implements SynonymFile {
         this.env = env;
         this.location = location;
 
-        this.httpclient = AccessController.doPrivileged((PrivilegedAction<CloseableHttpClient>) HttpClients::createDefault);
 
         isNeedReloadSynonymMap();
     }
